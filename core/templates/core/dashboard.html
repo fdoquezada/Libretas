@@ -1,0 +1,70 @@
+{% extends 'base.html' %} 
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="grid two-columns">
+    <article class="card">
+        <h2>Resumen</h2>
+        <p class="muted">Base: {{ perfil.base|default:"Todas" }}</p>
+        <div class="stats-grid">
+            <div class="stat">
+                <span class="stat-label">Total</span>
+                <strong class="stat-value">{{ total_entregas }}</strong>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Pendientes</span>
+                <strong class="stat-value">{{ entregas_pendientes }}</strong>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Entregadas</span>
+                <strong class="stat-value">{{ entregas_entregadas }}</strong>
+            </div>
+        </div>
+        <a class="btn btn-primary" href="{% url 'crear_entrega' %}">Registrar entrega</a>
+    </article>
+</section>
+
+<section class="card">
+    <header class="list-header">
+        <div>
+            <h2>Entregas recientes</h2>
+            <p class="muted">Listado de las libretas registradas</p>
+        </div>
+    </header>
+    {% if entregas %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Conductor</th>
+                    <th>Supervisor</th>
+                    <th>Estado</th>
+                    <th>Fase</th>
+                    <th>Periodo</th>
+                    <th>Fecha</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entrega in entregas %}
+                <tr>
+                    <td>{{ entrega.numero_registro }}</td>
+                    <td>{{ entrega.conductor.nombre }}</td>
+                    <td>{{ entrega.supervisor.nombre|default:"—" }}</td>
+                    <td><span class="status-badge {{ entrega.estado }}">{{ entrega.get_estado_display }}</span></td>
+                    <td>{{ entrega.get_fase_display }}</td>
+                    <td>{{ entrega.periodo }}</td>
+                    <td>{{ entrega.fecha_entrega|date:"d/m/Y" }}</td>
+                    <td class="table-actions">
+                        <a class="btn btn-link" href="{% url 'editar_entrega' entrega.pk %}">Actualizar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="muted">No hay entregas registradas todavía.</p>
+    {% endif %}
+</section>
+{% endblock %}

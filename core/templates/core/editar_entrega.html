@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Editar Entrega{% endblock %}
+{% block content %}
+<div class="card form-card">
+    <div class="form-header">
+        <div>
+            <p class="form-caption">Entrega #{{ entrega.numero_registro }}</p>
+            <h2>Actualizar estado y fase</h2>
+            <p class="muted">Conductor: {{ entrega.conductor.nombre }} · Periodo: {{ entrega.periodo }}</p>
+        </div>
+        <a class="btn btn-outline" href="{% url 'dashboard' %}">Volver</a>
+    </div>
+    <form method="post" class="form-grid two-columns">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-field{% if field.name == 'notas' %} span-2{% endif %}">
+            {{ field.label_tag }}
+            {{ field }}
+            {% for error in field.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+        </div>
+        {% endfor %}
+        <div class="form-actions span-2">
+            <a class="btn btn-link" href="{% url 'dashboard' %}">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

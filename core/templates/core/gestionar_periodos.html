@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Periodos{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="list-header">
+        <div>
+            <h2>Periodos</h2>
+            <p class="muted">Define los trimestres disponibles en el sistema.</p>
+        </div>
+        <a class="btn btn-primary" href="{% url 'crear_periodo' %}">Nuevo periodo</a>
+    </div>
+    {% if periodos %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Trimestre</th>
+                    <th>Año</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for periodo in periodos %}
+                <tr>
+                    <td>{{ periodo.get_trimestre_display }}</td>
+                    <td>{{ periodo.año }}</td>
+                    <td class="table-actions">
+                        <a class="btn btn-link" href="{% url 'editar_periodo' periodo.pk %}">Editar</a>
+                        <form method="post" action="{% url 'eliminar_periodo' periodo.pk %}">
+                            {% csrf_token %}
+                            <button class="btn btn-danger" type="submit">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="muted">No hay periodos configurados.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

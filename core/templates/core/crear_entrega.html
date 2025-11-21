@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Crear Entrega{% endblock %}
+{% block content %}
+<div class="card form-card">
+    <div class="form-header">
+        <div>
+            <p class="form-caption">Registro</p>
+            <h2>Crear nueva entrega</h2>
+            <p class="muted">Completa la información para asignar una libreta a un conductor.</p>
+        </div>
+        <div class="form-shortcuts">
+            <span>¿Falta alguien?</span>
+            <div class="button-stack">
+                <a class="btn btn-outline" href="{% url 'crear_conductor' %}">Nuevo conductor</a>
+                <a class="btn btn-outline" href="{% url 'crear_supervisor' %}">Nuevo supervisor</a>
+                <a class="btn btn-outline" href="{% url 'crear_periodo' %}">Nuevo periodo</a>
+            </div>
+        </div>
+    </div>
+    <form method="post" class="form-grid two-columns">
+        {% csrf_token %}
+        <div class="form-info span-2">
+            El número de registro se asignará automáticamente en orden correlativo.
+        </div>
+        <div class="form-field">
+            {{ form.conductor.label_tag }}
+            {{ form.conductor }}
+            {% for error in form.conductor.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-field">
+            {{ form.supervisor.label_tag }}
+            {{ form.supervisor }}
+            {% for error in form.supervisor.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-field">
+            {{ form.estado.label_tag }}
+            {{ form.estado }}
+            {% for error in form.estado.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-field">
+            {{ form.fase.label_tag }}
+            {{ form.fase }}
+            {% for error in form.fase.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-field">
+            {{ form.fecha_entrega.label_tag }}
+            {{ form.fecha_entrega }}
+            {% for error in form.fecha_entrega.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-field">
+            {{ form.periodo.label_tag }}
+            {{ form.periodo }}
+            {% for error in form.periodo.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-field span-2">
+            {{ form.notas.label_tag }}
+            {{ form.notas }}
+            {% for error in form.notas.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-actions span-2">
+            <a class="btn btn-link" href="{% url 'dashboard' %}">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar entrega</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

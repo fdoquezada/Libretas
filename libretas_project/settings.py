@@ -84,12 +84,10 @@ WSGI_APPLICATION = 'libretas_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-    'default': dj_database_url.config(default=config('DATABASE_URL'))
-        
-    }
+DATABASES ={ 'default':  dj_database_url.config(default=config('DATABASE_URL'))
+             
 }
+
 
 
 # Password validation
@@ -141,4 +139,10 @@ MEDIA_URL = '/media/'
 #cors
 
 CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', cast=bool)
+
+#auth settings
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = 'login'
+
 

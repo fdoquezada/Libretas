@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Nuevo Periodo{% endblock %}
+{% block content %}
+<div class="card form-card">
+    <div class="form-header">
+        <div>
+            <p class="form-caption">Catálogo</p>
+            <h2>{% if edicion %}Editar periodo{% else %}Registrar periodo{% endif %}</h2>
+            <p class="muted">Define los trimestres disponibles para reportar entregas.</p>
+        </div>
+        <a class="btn btn-outline" href="{% url 'listar_periodos' %}">Ver listado</a>
+    </div>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-field">
+                {{ field.label_tag }}
+                {{ field }}
+                {% for error in field.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+            </div>
+        {% endfor %}
+        <div class="form-actions">
+            <a class="btn btn-link" href="{% url 'listar_periodos' %}">Cancelar</a>
+            <button type="submit" class="btn btn-primary">{% if edicion %}Actualizar{% else %}Guardar{% endif %}</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

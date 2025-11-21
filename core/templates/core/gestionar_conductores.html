@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Conductores{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="list-header">
+        <div>
+            <h2>Conductores</h2>
+            <p class="muted">Administra los conductores disponibles por base.</p>
+        </div>
+        <a class="btn btn-primary" href="{% url 'crear_conductor' %}">Nuevo conductor</a>
+    </div>
+    {% if conductores %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Base</th>
+                    <th>Perfil asociado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conductor in conductores %}
+                <tr>
+                    <td>{{ conductor.nombre }}</td>
+                    <td>{{ conductor.get_base_display }}</td>
+                    <td>{{ conductor.perfil|default:"—" }}</td>
+                    <td class="table-actions">
+                        <a class="btn btn-link" href="{% url 'editar_conductor' conductor.pk %}">Editar</a>
+                        <form method="post" action="{% url 'eliminar_conductor' conductor.pk %}">
+                            {% csrf_token %}
+                            <button class="btn btn-danger" type="submit">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="muted">No hay conductores registrados.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

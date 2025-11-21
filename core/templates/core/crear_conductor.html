@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Nuevo Conductor{% endblock %}
+{% block content %}
+<div class="card form-card">
+    <div class="form-header">
+        <div>
+            <p class="form-caption">Catálogo</p>
+            <h2>{% if edicion %}Editar conductor{% else %}Registrar conductor{% endif %}</h2>
+            <p class="muted">Agrega o actualiza conductores disponibles para las entregas.</p>
+        </div>
+        <a class="btn btn-outline" href="{% url 'listar_conductores' %}">Ver listado</a>
+    </div>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-field">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}
+                {% for error in field.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+            </div>
+        {% endfor %}
+        <div class="form-actions">
+            <a class="btn btn-link" href="{% url 'listar_conductores' %}">Cancelar</a>
+            <button type="submit" class="btn btn-primary">{% if edicion %}Actualizar{% else %}Guardar{% endif %}</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Entrega de Libretas{% endblock %}</title> 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="branding">
+            <h1>Entrega de Libretas</h1>
+            <p class="subheading">Gestión trimestral de entregas</p>
+        </div>
+        <nav class="user-nav">
+            {% if user.is_authenticated %} 
+                <div class="nav-links">
+                    <a href="{% url 'dashboard' %}">Inicio</a>
+                    <a href="{% url 'listar_conductores' %}">Conductores</a>
+                    <a href="{% url 'listar_supervisores' %}">Supervisores</a>
+                    <a href="{% url 'listar_periodos' %}">Periodos</a>
+                </div>
+                <p>Bienvenido, <strong>{{ user.username }}</strong></p>
+                <a class="btn btn-outline" href="{% url 'logout' %}">Cerrar sesión</a> 
+            {% else %} 
+                <a class="btn btn-link" href="{% url 'login' %}">Iniciar sesión</a> 
+                <a class="btn btn-primary" href="{% url 'signup' %}">Registrarse</a> 
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="app-main">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% block content %} 
+            {% endblock content %}
+    </main>
+
+    <footer class="app-footer">
+        <p>© 2024 Entrega de Libretas. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    {% block scripts %}
+    {% endblock scripts %}
+
+</body>
+</html>
