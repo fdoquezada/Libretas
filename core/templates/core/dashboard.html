@@ -1,5 +1,10 @@
 {% extends 'base.html' %} 
+{% load static %}
 {% block title %}Dashboard{% endblock %}
+
+{% block favicon %}
+        <link rel="icon" href="{% static './img/analisis.png' %}" type="image/x-icon">
+{% endblock %}
 {% block content %}
 <section class="grid two-columns">
     <article class="card">

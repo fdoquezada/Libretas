@@ -1,4 +1,9 @@
 {% extends 'base.html' %} 
+{% load  static %}
+{% block favicon %}
+        <link rel="icon" href="{% static './img/register.png' %}" type="image/x-icon">
+{% endblock %}
+
 
 {% block title %}Registro{% endblock %} 
 

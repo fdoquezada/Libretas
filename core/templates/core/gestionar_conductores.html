@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Conductores{% endblock %}
+{% load static %}
+{% block favicon %}
+        <link rel="icon" href="{% static './img/conductor.png' %}" type="image/x-icon">
+{% endblock %}
+
 {% block content %}
 <div class="card">
     <div class="list-header">

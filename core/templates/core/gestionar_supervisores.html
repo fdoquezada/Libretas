@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}Supervisores{% endblock %}
+{% load static %}
+{% block favicon %}
+        <link rel="icon" href="{% static './img/supervisor.png' %}" type="image/x-icon">
+{% endblock %}
 {% block content %}
 <div class="card">
     <div class="list-header">
