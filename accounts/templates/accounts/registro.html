@@ -1,12 +1,43 @@
-{% extent 'base.html'%}
+{% extends 'base.html' %} 
 
-{% block title %}Registro{% endblock %}
+{% block title %}Registro{% endblock %} 
 
+{% block main_class %}auth-page{% endblock %} 
 {% block content %}
-<h2>Registro de Usuario</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Registrarse</button>
-</form>
-{% endblock %}
+<div class="auth-card">
+    <h2>Crear una Cuenta</h2>
+    
+    {% if form.non_field_errors %}
+    <div class="alert alert-error">
+        {% for error in form.non_field_errors %}
+            {{ error }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <form method="post" class="auth-form">
+        {% csrf_token %} 
+        
+        {% for field in form %}
+        <div class="form-field">
+            {{ field.label_tag }} 
+            {{ field }} 
+            {% if field.errors %}
+                <p class="error-text">{{ field.errors|striptags }}</p>
+            {% endif %} 
+            {% if field.help_text %}
+                <small class="muted">{{ field.help_text|safe }}</small>
+            {% endif %}
+        </div>
+        {% endfor %} 
+        
+        <button type="submit" class="btn btn-primary btn-submit">
+            Registrarme
+        </button>
+    </form>
+    
+    <div class="auth-links">
+        ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia Sesión</a>
+    </div>
+</div>
+{% endblock content %}

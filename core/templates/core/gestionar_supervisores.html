@@ -9,26 +9,40 @@
         </div>
         <a class="btn btn-primary" href="{% url 'crear_supervisor' %}">Nuevo supervisor</a>
     </div>
-    {% if supervisores %}
+
+    {# --- INFORMACIÓN DE PAGINACIÓN --- #}
+    <div class="pagination-info">
+        <small class="text-muted">
+            Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ page_obj.paginator.count }} supervisores
+        </small>
+    </div>
+    
+    {% if page_obj %}
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
+                    <th>N°</th>
                     <th>Nombre</th>
                     <th>Base</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                {% for supervisor in supervisores %}
+                {% for supervisor in page_obj %}
                 <tr>
+                    <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
                     <td>{{ supervisor.nombre }}</td>
                     <td>{{ supervisor.get_base_display }}</td>
                     <td class="table-actions">
-                        <a class="btn btn-link" href="{% url 'editar_supervisor' supervisor.pk %}">Editar</a>
-                        <form method="post" action="{% url 'eliminar_supervisor' supervisor.pk %}">
+                        <a class="btn btn-sm btn-info" href="{% url 'editar_supervisor' supervisor.pk %}">Editar</a>
+                        
+                        <form method="post" action="{% url 'eliminar_supervisor' supervisor.pk %}" style="display: inline;">
                             {% csrf_token %}
-                            <button class="btn btn-danger" type="submit">Eliminar</button>
+                            <button type="submit" class="btn btn-sm btn-danger" 
+                                    onclick="return confirm('¿Estás seguro de eliminar a {{ supervisor.nombre }}?')">
+                                Eliminar
+                            </button>
                         </form>
                     </td>
                 </tr>
@@ -36,9 +50,74 @@
             </tbody>
         </table>
     </div>
+
+    {# --- PAGINACIÓN --- #}
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        <div class="pagination-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="pagination-link">&laquo;</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">&lsaquo;</a>
+            {% endif %}
+
+            <span class="pagination-current">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">&rsaquo;</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">&raquo;</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
     {% else %}
     <p class="muted">No hay supervisores registrados.</p>
     {% endif %}
 </div>
-{% endblock %}
 
+<style>
+.pagination-info {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.pagination-links {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pagination-link {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #007bff;
+    background: white;
+}
+
+.pagination-link:hover {
+    background: #e9ecef;
+}
+
+.pagination-current {
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.table-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+</style>
+{% endblock %}

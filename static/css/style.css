@@ -192,6 +192,57 @@ body {
     gap: 1.5rem;
 }
 
+
+/* Estilos para filtros y paginación */
+.filtros-avanzados {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.filtros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: end;
+}
+
+.filtro-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filtro-group label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.filtro-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: end;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid #dee2e6;
+}
+
+.pagination-active {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    background: #007bff;
+    color: white;
+    font-weight: 500;
+}
+
 @media (min-width: 768px) {
     .grid.two-columns {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -404,3 +455,79 @@ table th {
     display: inline-flex;
 }
 
+/* --- ESTILOS ESPECÍFICOS PARA AUTENTICACIÓN (LOGIN/REGISTRO) --- */
+
+/* Centra el contenido en la pantalla */
+.app-main.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Ajustamos el padding para pantallas pequeñas si es necesario */
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Contenedor principal del formulario de autenticación */
+.auth-card {
+    /* Hereda estilos de .card, pero ajustado para formularios */
+    background-color: var(--card-bg);
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1); /* Sombra más fuerte para destacar */
+    width: 100%;
+    max-width: 420px; /* Ancho máximo para que no se estire demasiado */
+    margin: auto; /* Centra el bloque si el .app-main no tiene flex */
+}
+
+/* Título de la tarjeta de autenticación */
+.auth-card h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Estilos de párrafos dentro del formulario (p. ej., mensajes de error, ayuda, o enlaces) */
+.auth-card p {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+/* Contenedor de formulario para aplicar espaciado consistente */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Estiliza los campos de formulario específicos para que se vean mejor */
+.auth-form .form-field {
+    margin-bottom: 0; /* Quitamos el margen inferior si ya usamos gap en .auth-form */
+}
+
+/* Estilos para enlaces de navegación (por ejemplo, "¿Ya tienes cuenta?") */
+.auth-links {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.auth-links a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+/* Estilo para el botón de envío (ej. "Iniciar Sesión" o "Registrarme") */
+.auth-card .btn-submit {
+    /* Sobrescribe el estilo por si se usa .btn-primary */
+    width: 100%; /* Botón de ancho completo */
+    margin-top: 0.5rem;
+}

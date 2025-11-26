@@ -7,13 +7,43 @@
             <h2>Conductores</h2>
             <p class="muted">Administra los conductores disponibles por base.</p>
         </div>
-        <a class="btn btn-primary" href="{% url 'crear_conductor' %}">Nuevo conductor</a>
+        <div class="btn-group">
+            <a class="btn btn-primary" href="{% url 'crear_conductor' %}">Nuevo conductor</a>
+            <a class="btn btn-success" href="{% url 'carga_masiva_conductores' %}">
+                <i class="fas fa-upload"></i> Carga Masiva
+            </a>
+        </div>
     </div>
-    {% if conductores %}
+
+    {# --- 1. FILTROS --- #}
+    <div class="filter-section my-3">
+        <form method="get" class="d-flex align-items-center">
+            <label for="base-filter" class="me-2">Filtrar por Base:</label>
+            <select name="base" id="base-filter" class="form-select me-3" onchange="this.form.submit()">
+                <option value="">Todas las Bases</option>
+                {% for key, value in base_choices %}
+                    <option value="{{ key }}" {% if request.GET.base == key|stringformat:"s" %}selected{% endif %}>
+                        {{ value }}
+                    </option>
+                {% endfor %}
+            </select>
+            <noscript><button type="submit" class="btn btn-secondary">Filtrar</button></noscript>
+        </form>
+    </div>
+
+    {# --- INFORMACIÓN DE PAGINACIÓN --- #}
+    <div class="pagination-info">
+        <small class="text-muted">
+            Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ page_obj.paginator.count }} conductores
+        </small>
+    </div>
+
+    {% if page_obj %}
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
+                    <th>N°</th>
                     <th>Nombre</th>
                     <th>Base</th>
                     <th>Perfil asociado</th>
@@ -21,26 +51,141 @@
                 </tr>
             </thead>
             <tbody>
-                {% for conductor in conductores %}
+                {% for conductor in page_obj %}
                 <tr>
+                    <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
                     <td>{{ conductor.nombre }}</td>
-                    <td>{{ conductor.get_base_display }}</td>
+                    <td>{{ conductor.get_base_display }}</td>  {# ← Esto usa get_FOO_display() #}
                     <td>{{ conductor.perfil|default:"—" }}</td>
                     <td class="table-actions">
-                        <a class="btn btn-link" href="{% url 'editar_conductor' conductor.pk %}">Editar</a>
-                        <form method="post" action="{% url 'eliminar_conductor' conductor.pk %}">
+                        <a class="btn btn-sm btn-info" href="{% url 'editar_conductor' conductor.pk %}">Editar</a>
+                        
+                        <form method="post" action="{% url 'eliminar_conductor' conductor.pk %}" id="form-eliminar-{{ conductor.pk }}" style="display: inline;">
                             {% csrf_token %}
-                            <button class="btn btn-danger" type="submit">Eliminar</button>
                         </form>
+                        <button class="btn btn-sm btn-danger" 
+                                onclick="confirmarEliminacion('form-eliminar-{{ conductor.pk }}', '{{ conductor.nombre }}')">
+                            Eliminar
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    {# --- 2. PAGINACIÓN --- #}
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        <div class="pagination-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if request.GET.base %}&base={{ request.GET.base }}{% endif %}" class="pagination-link">
+                    &laquo;
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.base %}&base={{ request.GET.base }}{% endif %}" class="pagination-link">
+                    &lsaquo;
+                </a>
+            {% endif %}
+    
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="pagination-active">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}{% if request.GET.base %}&base={{ request.GET.base }}{% endif %}" class="pagination-link">
+                        {{ num }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+    
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.base %}&base={{ request.GET.base }}{% endif %}" class="pagination-link">
+                    &rsaquo;
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.base %}&base={{ request.GET.base }}{% endif %}" class="pagination-link">
+                    &raquo;
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
     {% else %}
-    <p class="muted">No hay conductores registrados.</p>
+    <p class="muted">No hay conductores registrados o no se encontraron resultados para el filtro.</p>
     {% endif %}
 </div>
-{% endblock %}
 
+
+
+<style>
+.pagination-info {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.pagination-links {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.pagination-link {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #007bff;
+    background: white;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.pagination-link:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.pagination-current {
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+    color: #6c757d;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.table-actions {
+    display: flex;
+    gap: 0.25rem;
+    white-space: nowrap;
+}
+
+.btn-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .pagination-links {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .table-actions {
+        flex-direction: column;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

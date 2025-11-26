@@ -10,16 +10,44 @@
         </div>
         <a class="btn btn-outline" href="{% url 'listar_conductores' %}">Ver listado</a>
     </div>
+    
     <form method="post" class="form-grid">
         {% csrf_token %}
-        {% for field in form %}
-            <div class="form-field">
-                {{ field.label_tag }}
-                {{ field }}
-                {% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}
-                {% for error in field.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
-            </div>
-        {% endfor %}
+        
+        {# Campo Nombre #}
+        <div class="form-field">
+            <label for="{{ form.nombre.id_for_label }}">Nombre:</label>
+            {{ form.nombre }}
+            {% if form.nombre.help_text %}<small class="muted">{{ form.nombre.help_text }}</small>{% endif %}
+            {% for error in form.nombre.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+        </div>
+        
+        {# Campo Base - solo mostrar en edición o si no está oculto #}
+        {% if not form.base.is_hidden %}
+        <div class="form-field">
+            <label for="{{ form.base.id_for_label }}">Base:</label>
+            {{ form.base }}
+            {% if form.base.help_text %}<small class="muted">{{ form.base.help_text }}</small>{% endif %}
+            {% for error in form.base.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+        </div>
+        {% else %}
+        {# Si está oculto, mostrarlo como información #}
+        <div class="form-field">
+            <label>Base:</label>
+            <input type="text" value="{{ form.base.value }}" class="form-control" disabled>
+            <small class="muted">La base se asigna automáticamente según tu perfil</small>
+            {{ form.base }} {# Renderizar el campo hidden #}
+        </div>
+        {% endif %}
+        
+        {# Campo Perfil #}
+        <div class="form-field">
+            <label for="{{ form.perfil.id_for_label }}">Perfil asociado:</label>
+            {{ form.perfil }}
+            {% if form.perfil.help_text %}<small class="muted">{{ form.perfil.help_text }}</small>{% endif %}
+            {% for error in form.perfil.errors %}<p class="error-text">{{ error }}</p>{% endfor %}
+        </div>
+        
         <div class="form-actions">
             <a class="btn btn-link" href="{% url 'listar_conductores' %}">Cancelar</a>
             <button type="submit" class="btn btn-primary">{% if edicion %}Actualizar{% else %}Guardar{% endif %}</button>
@@ -27,4 +55,3 @@
     </form>
 </div>
 {% endblock %}
-

@@ -2,7 +2,16 @@
 {% block title %}Periodos{% endblock %}
 {% block content %}
 <div class="card">
+        <div>
+            <a href="{% url 'exportar_periodos_csv' %}" class="btn btn-primary">
+                Descargar CSV
+            </a>
+            <a href="{% url 'exportar_periodos_xls' %}" class="btn btn-primary">
+                Descargar Excel (XLSX)
+            </a>
+        </div>
     <div class="list-header">
+        
         <div>
             <h2>Periodos</h2>
             <p class="muted">Define los trimestres disponibles en el sistema.</p>

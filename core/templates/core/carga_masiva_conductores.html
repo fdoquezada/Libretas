@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Carga Masiva de Conductores{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Carga Masiva de Conductores</h2>
+        <p class="muted">Carga múltiples conductores desde un archivo Excel</p>
+    </div>
+    
+    <div class="card-body">
+        <div class="alert alert-info">
+            <h4>Instrucciones:</h4>
+            <ul>
+                <li><strong>Columna obligatoria:</strong> "nombre"</li>
+                <li><strong>Columna opcional:</strong> "base" (valores: lampa, calle larga)</li>
+                <li>Si no incluye la columna "base", se asignará automáticamente tu base actual: <strong>{{ user.perfil.base }}</strong></li>
+                <li>Si especifica una base no válida, se usará tu base actual</li>
+                <li>Formatos soportados: .xlsx, .xls</li>
+                <li>Tamaño máximo: 5MB</li>
+            </ul>
+            
+            <div class="mt-3">
+                <a href="{% url 'descargar_plantilla_conductores' %}" class="btn btn-sm btn-outline-primary">
+                    📥 Descargar Plantilla Completa
+                </a>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.archivo_excel.id_for_label }}">Archivo Excel:</label>
+                {{ form.archivo_excel }}
+                {% if form.archivo_excel.errors %}
+                <div class="error">{{ form.archivo_excel.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">{{ form.archivo_excel.help_text }}</small>
+            </div>
+            
+            <div class="form-actions mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> Cargar Conductores
+                </button>
+                <a href="{% url 'listar_conductores' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+
+        {% if errores %}
+        <div class="alert alert-warning mt-4">
+            <h5>Errores encontrados (mostrando primeros 10):</h5>
+            <ul class="mb-0">
+                {% for error in errores %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+</style>
+{% endblock %}

@@ -21,50 +21,294 @@
         </div>
         <a class="btn btn-primary" href="{% url 'crear_entrega' %}">Registrar entrega</a>
     </article>
+
+    <article class="card">
+        <h2>Filtros Rápidos</h2>
+        <div class="filtros-rapidos">
+            <a href="?estado=pendiente" class="btn btn-sm btn-outline-warning">Pendientes ({{ entregas_pendientes }})</a>
+            <a href="?estado=entregada" class="btn btn-sm btn-outline-success">Entregadas ({{ entregas_entregadas }})</a>
+            <a href="?" class="btn btn-sm btn-outline-secondary">Limpiar filtros</a>
+        </div>
+    </article>
 </section>
 
 <section class="card">
     <header class="list-header">
         <div>
-            <h2>Entregas recientes</h2>
+            <h2>Lista de Entregas</h2>
             <p class="muted">Listado de las libretas registradas</p>
         </div>
+        <div class="export-buttons">
+            <a href="{% url 'exportar_entregas_csv' %}" class="btn btn-sm btn-primary">
+                Descargar CSV
+            </a>
+            <a href="{% url 'exportar_entregas_xls' %}" class="btn btn-sm btn-primary">
+                Descargar Excel
+            </a>
+        </div>
     </header>
-    {% if entregas %}
+
+    {# --- SECCIÓN DE FILTROS AVANZADOS --- #}
+    <div class="filtros-avanzados">
+        <form method="get" class="filtros-form">
+            <div class="filtros-grid">
+                <div class="filtro-group">
+                    <label for="estado">Estado:</label>
+                    <select name="estado" id="estado" class="form-select">
+                        <option value="">Todos los estados</option>
+                        {% for key, value in estados %}
+                            <option value="{{ key }}" {% if request.GET.estado == key %}selected{% endif %}>
+                                {{ value }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filtro-group">
+                    <label for="fase">Fase:</label>
+                    <select name="fase" id="fase" class="form-select">
+                        <option value="">Todas las fases</option>
+                        {% for key, value in fases %}
+                            <option value="{{ key }}" {% if request.GET.fase == key %}selected{% endif %}>
+                                {{ value }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filtro-group">
+                    <label for="periodo">Periodo:</label>
+                    <input type="text" name="periodo" id="periodo" class="form-control" 
+                           placeholder="Ej: 2024-1" value="{{ request.GET.periodo }}">
+                </div>
+
+                <div class="filtro-group">
+                    <label for="conductor">Conductor:</label>
+                    <select name="conductor" id="conductor" class="form-select">
+                        <option value="">Todos los conductores</option>
+                        {% for conductor in conductores %}
+                            <option value="{{ conductor.nombre }}" {% if request.GET.conductor == conductor.nombre %}selected{% endif %}>
+                                {{ conductor.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filtro-group">
+                    <label for="supervisor">Supervisor:</label>
+                    <select name="supervisor" id="supervisor" class="form-select">
+                        <option value="">Todos los supervisores</option>
+                        {% for supervisor in supervisores %}
+                            <option value="{{ supervisor.nombre }}" {% if request.GET.supervisor == supervisor.nombre %}selected{% endif %}>
+                                {{ supervisor.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filtro-actions">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <a href="?" class="btn btn-secondary">Limpiar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {# --- INDICADOR DE FILTROS ACTIVOS --- #}
+    {% if filtros_aplicados %}
+    <div class="filtros-activos">
+        <small class="text-muted">Filtros aplicados</small>
+        <a href="?" class="btn-clear-filters">× Limpiar todos</a>
+    </div>
+    {% endif %}
+
+    {# --- TABLA DE ENTREGAS --- #}
+    {% if page_obj %}
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>n°Registro</th>
                     <th>Conductor</th>
                     <th>Supervisor</th>
                     <th>Estado</th>
                     <th>Fase</th>
                     <th>Periodo</th>
                     <th>Fecha</th>
-                    <th></th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for entrega in entregas %}
+                {% for entrega in page_obj %}
                 <tr>
                     <td>{{ entrega.numero_registro }}</td>
                     <td>{{ entrega.conductor.nombre }}</td>
                     <td>{{ entrega.supervisor.nombre|default:"—" }}</td>
-                    <td><span class="status-badge {{ entrega.estado }}">{{ entrega.get_estado_display }}</span></td>
-                    <td>{{ entrega.get_fase_display }}</td>
+                    <td>
+                        <span class="status-badge {{ entrega.estado }}">
+                            {{ entrega.get_estado_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge {{ entrega.fase }}">
+                            {{ entrega.get_fase_display }}
+                        </span>
+                    </td>
                     <td>{{ entrega.periodo }}</td>
                     <td>{{ entrega.fecha_entrega|date:"d/m/Y" }}</td>
                     <td class="table-actions">
-                        <a class="btn btn-link" href="{% url 'editar_entrega' entrega.pk %}">Actualizar</a>
+                        <div class="btn-group">
+                            <a class="btn btn-sm btn-success" href="{% url 'editar_entrega' entrega.pk %}" title="Editar">
+                                <i class="fas fa-edit"></i> Actualizar
+                            </a>
+                            <a class="btn btn-sm btn-danger" 
+                               href="{% url 'eliminar_entrega' entrega.pk %}"
+                               onclick="return confirm('¿Estás seguro de eliminar la entrega #{{ entrega.numero_registro }}?')"
+                               title="Eliminar">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    {# --- PAGINACIÓN --- #}
+    <div class="pagination">
+        <div class="pagination-info">
+            Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ page_obj.paginator.count }} registros
+        </div>
+        
+        <nav class="pagination-nav">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="pagination-link">« Primera</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="pagination-link">‹ Anterior</a>
+            {% endif %}
+
+            <span class="pagination-current">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="pagination-link">Siguiente ›</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="pagination-link">Última »</a>
+            {% endif %}
+        </nav>
+    </div>
+
     {% else %}
-    <p class="muted">No hay entregas registradas todavía.</p>
+    <div class="no-results">
+        <p class="muted">No hay entregas registradas con los filtros aplicados.</p>
+        {% if filtros_aplicados %}
+            <a href="?" class="btn btn-primary">Ver todas las entregas</a>
+        {% endif %}
+    </div>
     {% endif %}
 </section>
+
+<style>
+.filtros-avanzados {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.filtros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: end;
+}
+
+.filtro-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filtro-group label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.filtro-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: end;
+}
+
+.filtros-rapidos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filtros-activos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: #e3f2fd;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.btn-clear-filters {
+    color: #dc3545;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid #dee2e6;
+}
+
+.pagination-nav {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pagination-link {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #007bff;
+    font-size: 0.9rem;
+}
+
+.pagination-link:hover {
+    background: #e9ecef;
+}
+
+.pagination-current {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.no-results {
+    text-align: center;
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .filtros-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .pagination {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+</style>
 {% endblock %}
